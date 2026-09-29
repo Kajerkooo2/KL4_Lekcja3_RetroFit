@@ -25,19 +25,19 @@
             android:id="@+id/rbOdpA"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="RadioButton" />
+            android:text="odp A" />
 
         <RadioButton
             android:id="@+id/rbOdpB"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="RadioButton" />
+            android:text="odp B" />
 
         <RadioButton
             android:id="@+id/rbOdpC"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="RadioButton" />
+            android:text="odp C" />
     </RadioGroup>
 
     <Button
