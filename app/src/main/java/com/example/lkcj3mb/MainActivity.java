@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
     List<Pytania> listaPytan;
 
+    int aktualnyIndeks = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,15 +59,20 @@ public class MainActivity extends AppCompatActivity {
         Call<List<Pytania>> call = quizApiService.getPytania();
         call.enqueue(
                 new Callback<List<Pytania>>() {
+
                     @Override
                     public void onResponse(Call<List<Pytania>> call, Response<List<Pytania>> response) {
                         if(!response.isSuccessful()){
-                            Toast.makeText(MainActivity.this,response.code(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Błąd: " + response.code(), Toast.LENGTH_SHORT).show();
                             return;
                         }
                         listaPytan = response.body();
-                        tvTrescPytania.setText(listaPytan.get(0).getTresc());
+
+                        if (listaPytan != null && !listaPytan.isEmpty()) {
+                            wyswietlPytanie(0);
+                        }
                     }
+
 
 
                     @Override
@@ -73,7 +80,52 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 }
+
         );
+        btnSprawdz.setOnClickListener(v -> sprawdzOdpowiedz());
 
     }
+    private void wyswietlPytanie(int x ){
+        if (x < 0 || x >= listaPytan.size()) {
+            Toast.makeText(this, "Koniec", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        aktualnyIndeks = x;
+        Pytania pytanie = listaPytan.get(x);
+
+        tvTrescPytania.setText(pytanie.getTresc());
+
+        rbOdpA.setText(pytanie.getOdpA());
+        rbOdpB.setText(pytanie.getOdpB());
+        rbOdpC.setText(pytanie.getOdpC());
+
+        rgOdpowiedzi.clearCheck();
+    }
+    private void sprawdzOdpowiedz(){
+        if (aktualnyIndeks >= listaPytan.size()) {
+            Toast.makeText(this, "Koniec", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int wyborId = rgOdpowiedzi.getCheckedRadioButtonId();
+        if (wyborId == -1) {
+            Toast.makeText(this, "Wybierz odpowiedz", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+       RadioButton zaznaczonyPrzycisk = findViewById(wyborId);
+
+        int wybranaOdpowiedz = rgOdpowiedzi.indexOfChild(zaznaczonyPrzycisk) + 1;
+
+        Pytania pytanie = listaPytan.get(aktualnyIndeks);
+
+        if (wybranaOdpowiedz == pytanie.getPoprawna()) {
+            Toast.makeText(this, "Dobra odpowiedz", Toast.LENGTH_SHORT).show();
+            wyswietlPytanie(aktualnyIndeks + 1);
+        } else {
+            Toast.makeText(this, "Zle odpowiedź to: " + pytanie.getPoprawna(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }
